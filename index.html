@@ -30,6 +30,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;overflow:hidden;b
 .lg{background:#fff;padding:9px 12px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.15);font-size:11px;line-height:1.6}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .dot.ap{background:transparent;border:2px dashed #999}
+#msg{padding:16px;font-size:12px;color:#999}
 @media(max-width:800px){#sb{position:absolute;height:45vh;width:100%;top:55vh}#top{left:0}#map{height:55vh}}
 </style>
 </head>
@@ -39,72 +40,86 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;overflow:hidden;b
     <header><h1>PyMEs Transporte de Alimentos<small>Magdalena, Colombia · <span id="n">…</span> empresas</small></h1></header>
     <input id="q" placeholder="Buscar empresa o ciudad…">
     <div id="fl"></div>
-    <div id="ls"></div>
+    <div id="ls"><div id="msg">Cargando datos…</div></div>
   </aside>
   <div id="map"></div>
 </div>
 <div id="top"><span><b id="ne">0</b> ubicaciones exactas · <b id="na">0</b> zonas aproximadas</span><span>Transporte de alimentos perecederos</span></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const RAW={"p":[{"i":"001","n":"COMERCIALIZADORA Y TRANSPORTES BERACA S.A.S","c":"Santa Marta","a":11.222606,"o":-74.191472,"t":"a","d":"Calle 22 No. 6-103, Local 14 C.C. San Miguel"},{"i":"002","n":"DICOM LOGISTICA Y TRANSPORTE SAS","c":"Santa Marta","a":11.231153,"o":-74.181351,"t":"a","d":"Carrera 3B 151-29, Barrio Aeromar"},{"i":"003","n":"DISTRIBUIDORA DEL CARIBE MAICAO LTDA","c":"Santa Marta","a":11.226344,"o":-74.204433,"t":"a","d":"Calle 20 No. 21-65, Barrio Jardín"},{"i":"004","n":"COMERCIALIZADORA CARBOMAR Y CIA LTDA","c":"Santa Marta","a":11.235385,"o":-74.190941,"t":"a","d":"Km 19 Vía Ciénaga"},{"i":"005","n":"GLOBAL EXPRESS CARGO S.A.S","c":"Santa Marta","a":11.214497,"o":-74.165992,"t":"a","d":"Calle 12 No. 32-49, Barrio Galicia"},{"i":"006","n":"CARGO LOGISTICS S.A.S","c":"Santa Marta","a":11.225116,"o":-74.163894,"t":"e","d":"Km 10 Vía Alterna al Puerto"},{"i":"007","n":"AGROPECUARIA FRIGORIFICO RODEO LTDA","c":"Santa Marta","a":11.232094,"o":-74.195092,"t":"e","d":"Santa Marta"},{"i":"008","n":"OPERADORA LOGÍSTICA DE SANTA MARTA S.A.S","c":"Santa Marta","a":11.232584,"o":-74.19264,"t":"e","d":"Santa Marta"},{"i":"009","n":"DURAMOS TRANSPORTES S.A.S","c":"Santa Marta","a":11.227097,"o":-74.19526,"t":"e","d":"Santa Marta"},{"i":"010","n":"TRANSPORTES SENSACIÓN LIMITADA","c":"Santa Marta","a":11.23949,"o":-74.193847,"t":"e","d":"Santa Marta"},{"i":"011","n":"CENTRAL DE TRANSPORTE DE SANTA MARTA LTDA","c":"Santa Marta","a":11.235254,"o":-74.185604,"t":"e","d":"Santa Marta"},{"i":"012","n":"TRANSBIO S.A.S","c":"Santa Marta","a":11.22474,"o":-74.205199,"t":"e","d":"Santa Marta"},{"i":"013","n":"TRANSMARES LOGÍSTICA S.A.S","c":"Santa Marta","a":11.217688,"o":-74.199271,"t":"e","d":"Santa Marta"},{"i":"014","n":"RODAMAR S.A.S","c":"Santa Marta","a":11.235326,"o":-74.177893,"t":"e","d":"Santa Marta"},{"i":"015","n":"AKATOR SERVICES AND TRANSPORTS S.A.S","c":"Santa Marta","a":11.209574,"o":-74.196575,"t":"a","d":"Carrera 33C No.19-52, Apartamento 2, Barrio Sant"},{"i":"016","n":"ACOMPA S.A.S","c":"Santa Marta","a":11.249681,"o":-74.184114,"t":"a","d":"Calle 5ª No. 4-140, Oficina 402"},{"i":"017","n":"OPERACIONES DE TRANSPORTE RUTA DEL SOL S.A.S","c":"Santa Marta","a":11.225315,"o":-74.174624,"t":"e","d":"Avenida Libertador No. 15-136"},{"i":"018","n":"SERVICIOS COOPERATIVOS DE TRANSPORTE LTDA","c":"Santa Marta","a":11.223587,"o":-74.198059,"t":"a","d":"Calle 12 No. 12-21"},{"i":"019","n":"TRANSPORTANDO EXPRESS S.A.S","c":"Santa Marta","a":11.233583,"o":-74.144884,"t":"a","d":"Mz L Casa 255, Barrio Villa Marbella"},{"i":"020","n":"CENTRO DE OPERACIONES SERVICIOS Y SOLUCIONES INTEGRALES EN TRANSPORTE LTDA","c":"Santa Marta","a":11.221742,"o":-74.17798,"t":"e","d":"Santa Marta"},{"i":"021","n":"CARIBBEAN SEA FOOD LOGISTICS S.A.S","c":"Ciénaga","a":11.018052,"o":-74.214693,"t":"a","d":"Calle 15, Edificio Baraque Apt 203 (Carrera 11 E"},{"i":"022","n":"SMITCO (THERMO KING REGIONAL)","c":"Santa Marta","a":11.237708,"o":-74.217645,"t":"e","d":"Carrera 1A #10A-12"},{"i":"023","n":"SUMINISTROS COLCARGA S.A.S","c":"Santa Marta","a":11.244115,"o":-74.210801,"t":"e","d":"Calle 15 # 2-14"},{"i":"024","n":"COOPERATIVA DE TRANSPORTADORES DEL NORTE DE COLOMBIA","c":"Santa Marta","a":11.246501,"o":-74.211943,"t":"a","d":"Carrera 8 14-94, Barrio los Laureles"},{"i":"025","n":"COOPERATIVA DE TRANSPORTE DE SERVICIO DE CARGA - COOTRANSERCAR","c":"Santa Marta","a":11.235168,"o":-74.204105,"t":"a","d":"Av. del Ferrocarril No. 3-77 Of 201 Piso 2"},{"i":"026","n":"Transportes CGM GROUP S.A.S","c":"Santa Marta","a":11.20409,"o":-74.190538,"t":"a","d":"Calle 12 No 26 B 1 22"},{"i":"027","n":"COMERCIALIZADORA Y LOGÍSTICA CL GRANATTE S.A.S","c":"Santa Marta","a":11.240123,"o":-74.215676,"t":"e","d":"Calle 23 16 21"},{"i":"028","n":"SIAM DISTRIBUCIONES S.A.S","c":"Fundación","a":10.022437,"o":-74.272983,"t":"a","d":"Carrera 10 14 16, Barrio El Carmen"},{"i":"029","n":"DISTRIBUIDORA DEL MAGDALENA S.A.S","c":"Fundación","a":10.52267,"o":-74.18825,"t":"e","d":"Carrera 10 5 45"},{"i":"030","n":"COOPERATIVA DE TRANSPORTE DE FUNDACIÓN MAGDALENA LTDA","c":"Fundación","a":10.048859,"o":-74.306258,"t":"a","d":"Calle 7 No. 6-36, Oficina 101"},{"i":"031","n":"DISTRIBUIDORA Y AUTOSERVICIO SUPERLAY SAS","c":"Fundación","a":10.515567,"o":-74.190109,"t":"e","d":"Fundación"},{"i":"032","n":"COMERCIALIZADORA GIRALDO DEL CARIBE S.A.S","c":"Fundación","a":10.517181,"o":-74.192018,"t":"e","d":"Fundación"},{"i":"033","n":"TRANSPORTES ESPECIALES DE PLATO SAS","c":"Plato","a":9.774336,"o":-74.292332,"t":"a","d":"Calle 5 No. 15-78, Barrio Centro"},{"i":"034","n":"MULTISERVICIOS TRANSEQUIPOS LOGÍSTICA S.A.S BIC","c":"Plato","a":9.788289,"o":-74.807181,"t":"e","d":"Plato"},{"i":"035","n":"MDTM SAS ZOMAC","c":"Aracataca","a":10.584698,"o":-74.190072,"t":"e","d":"Aracataca"},{"i":"036","n":"CENTRO DE ACOPIO COOLECHERA PLANTA DE PLATO","c":"Plato","a":9.801385,"o":-74.276628,"t":"a","d":"Vía Principal Plato, Barrio La Magdalena"},{"i":"037","n":"TRANSPORTES R&S / TRANSPORTE R&R S.A.S","c":"Santa Marta","a":11.226583,"o":-74.173277,"t":"e","d":"Santa Marta"},{"i":"038","n":"TERMINAL DE TRANSPORTE DE CIÉNAGA S.A.S","c":"Ciénaga","a":11.011396,"o":-74.225585,"t":"e","d":"Ciénaga"}],"z":{"Santa Marta":[11.228,-74.185,0.04],"Fundación":[10.04,-74.29,0.02],"Ciénaga":[11.01,-74.22,0.02],"Plato":[9.79,-74.28,0.02],"Aracataca":[10.23,-74.15,0.02]}};
-const C={'Santa Marta':'#e74c3c','Fundación':'#3498db','Ciénaga':'#27ae60','Plato':'#f39c12','Aracataca':'#8e44ad'};
-const P=RAW.p.map(o=>({id:'PYME-'+o.i,name:o.n,city:o.c,lat:o.a,lng:o.o,type:o.t==='e'?'exacta':'aproximada',address:o.d}));
-const Z=RAW.z;
-const map=L.map('map').setView([-11.1,-74.2],8);
+var SOURCES=[
+  'https://raw.githubusercontent.com/pezmistico-read/pymes-magdalena-mapa/master/pymes_data.json',
+  'pymes_data.json'
+];
+var C={'Santa Marta':'#e74c3c','Fundación':'#3498db','Ciénaga':'#27ae60','Plato':'#f39c12','Aracataca':'#8e44ad'};
+var map=L.map('map').setView([-11.1,-74.2],8);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);
-L.scale({position:'bottomright'}).addTo(map);
+L.control.scale({position:'bottomright'}).addTo(map);
 map.createPane('zones');map.getPane('zones').style.zIndex=350;
-const Lg=L.control({position:'bottomleft'});
-Lg.onAdd=function(){const d=L.DomUtil.create('div','lg');let h='<b>Ciudades</b><br>';for(const k in C)h+='<span class="dot" style="background:'+C[k]+'"></span>'+k+'<br>';h+='<span class="dot ap"></span>Zona aproximada';d.innerHTML=h;return d};
+var Lg=L.control({position:'bottomleft'});
+Lg.onAdd=function(){var d=L.DomUtil.create('div','lg');var h='<b>Ciudades</b><br>';for(var k in C){h+='<span class="dot" style="background:'+C[k]+'"></span>'+k+'<br>';}h+='<span class="dot ap"></span>Zona aproximada';d.innerHTML=h;return d;};
 Lg.addTo(map);
-let MARK=[],ACTIVE={};
-document.getElementById('n').textContent=P.length;
-const ex=P.filter(p=>p.type==='exacta').length;
-document.getElementById('ne').textContent=ex;
-document.getElementById('na').textContent=P.length-ex;
-for(const city in Z){const z=Z[city];L.circle([z[0],z[1]],{pane:'zones',radius:z[2]*1000,color:'#888',weight:1.5,dashArray:'5 5',fillColor:'#888',fillOpacity:.07}).addTo(map)}
-P.forEach(p=>{
-  const e=p.type==='exacta',col=C[p.city]||'#666';
-  const sz=e?16:12,bd=e?'3px solid #fff':'2px dashed #f90',op=e?1:.6;
-  const ic=L.divIcon({html:'<div style="background:'+col+';width:'+sz+'px;height:'+sz+'px;border-radius:50%;border:'+bd+';opacity:'+op+';box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>',iconSize:[sz+8,sz+8]});
-  const m=L.marker([p.lat,p.lng],{icon:ic}).addTo(map);
-  m.bindPopup('<div style="font-family:system-ui;min-width:210px">'+
-    '<div style="font-weight:700;font-size:13.5px;line-height:1.3;margin-bottom:5px">'+p.name+'</div>'+
-    '<div><span style="background:'+col+';color:#fff;padding:2px 10px;border-radius:11px;font-size:11px;font-weight:600">'+p.city+'</span> <span style="color:#aaa;font-size:10px">'+p.id+'</span></div>'+
-    (p.address?'<div style="color:#777;font-size:11px;margin-top:5px">'+p.address+'</div>':'')+
-    '<div style="color:#999;font-size:10.5px;margin-top:5px">lat '+p.lat.toFixed(5)+' · lng '+p.lng.toFixed(5)+'</div>'+
-    '<div style="margin-top:5px;font-size:11px;color:'+(e?'#27ae60':'#f39c12')+'">'+(e?'✓ Ubicación exacta (geocodificada)':'≈ Zona aproximada por ciudad')+'</div></div>');
-  MARK.push({m,p});
-});
-const fl=document.getElementById('fl');
-for(const city in C){
-  ACTIVE[city]=true;
-  const b=document.createElement('button');
-  b.className='ch';b.style.background=C[city];b.textContent=city;
-  b.onclick=function(){ACTIVE[city]=!ACTIVE[city];b.classList.toggle('off',!ACTIVE[city]);render()};
-  fl.appendChild(b);
+var P=[],MARK=[],ACTIVE={};
+function tryLoad(i){
+  if(i>=SOURCES.length){document.getElementById('ls').innerHTML='<div id="msg" style="color:#c00">No se pudieron cargar los datos.</div>';return;}
+  fetch(SOURCES[i]).then(function(r){return r.json();}).then(function(d){
+    if(!d||!d.p||!d.p.length){throw new Error('vacio');}
+    boot(d);
+  }).catch(function(){tryLoad(i+1);});
+}
+function boot(RAW){
+  P=RAW.p.map(function(o){return{id:'PYME-'+o.i,name:o.n,city:o.c,lat:o.a,lng:o.o,type:(o.t==='e'?'exacta':'aproximada'),address:o.d};});
+  var Z=RAW.z;
+  document.getElementById('n').textContent=P.length;
+  var nex=P.filter(function(p){return p.type==='exacta';}).length;
+  document.getElementById('ne').textContent=nex;
+  document.getElementById('na').textContent=P.length-nex;
+  for(var zc in Z){var z=Z[zc];L.circle([z[0],z[1]],{pane:'zones',radius:z[2]*1000,color:'#888',weight:1.5,dashArray:'5 5',fillColor:'#888',fillOpacity:.07}).addTo(map);}
+  P.forEach(function(p){
+    var e=p.type==='exacta',col=C[p.city]||'#666';
+    var sz=e?16:12,bd=e?'3px solid #fff':'2px dashed #f90',op=e?1:.6;
+    var ic=L.divIcon({html:'<div style="background:'+col+';width:'+sz+'px;height:'+sz+'px;border-radius:50%;border:'+bd+';opacity:'+op+';box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>',iconSize:[sz+8,sz+8]});
+    var m=L.marker([p.lat,p.lng],{icon:ic}).addTo(map);
+    m.bindPopup('<div style="font-family:system-ui;min-width:210px">'+
+      '<div style="font-weight:700;font-size:13.5px;line-height:1.3;margin-bottom:5px">'+p.name+'</div>'+
+      '<div><span style="background:'+col+';color:#fff;padding:2px 10px;border-radius:11px;font-size:11px;font-weight:600">'+p.city+'</span> <span style="color:#aaa;font-size:10px">'+p.id+'</span></div>'+
+      (p.address?'<div style="color:#777;font-size:11px;margin-top:5px">'+p.address+'</div>':'')+
+      '<div style="color:#999;font-size:10.5px;margin-top:5px">lat '+p.lat.toFixed(5)+' · lng '+p.lng.toFixed(5)+'</div>'+
+      '<div style="margin-top:5px;font-size:11px;color:'+(e?'#27ae60':'#f39c12')+'">'+(e?'✓ Ubicación exacta (geocodificada)':'≈ Zona aproximada por ciudad')+'</div></div>');
+    MARK.push({m:m,p:p});
+  });
+  var fl=document.getElementById('fl');
+  Object.keys(C).forEach(function(key){
+    ACTIVE[key]=true;
+    var b=document.createElement('button');
+    b.className='ch';b.style.background=C[key];b.textContent=key;
+    b.onclick=function(){ACTIVE[key]=!ACTIVE[key];b.classList.toggle('off',!ACTIVE[key]);render();};
+    fl.appendChild(b);
+  });
+  render();
 }
 function render(){
-  const q=document.getElementById('q').value.toLowerCase();
-  const ls=document.getElementById('ls');ls.innerHTML='';
-  const match=p=>ACTIVE[p.city]&&(!q||(p.name+' '+p.city).toLowerCase().indexOf(q)>-1);
+  if(!P.length){return;}
+  var q=document.getElementById('q').value.toLowerCase();
+  var ls=document.getElementById('ls');ls.innerHTML='';
+  var match=function(p){return ACTIVE[p.city]&&(!q||(p.name+' '+p.city).toLowerCase().indexOf(q)>-1);};
   MARK.forEach(function(o){
-    const on=match(o.p);
-    if(on&&!map.hasLayer(o.m))o.m.addTo(map);
-    if(!on&&map.hasLayer(o.m))map.removeLayer(o.m);
+    var on=match(o.p);
+    if(on&&!map.hasLayer(o.m)){o.m.addTo(map);}
+    if(!on&&map.hasLayer(o.m)){map.removeLayer(o.m);}
   });
-  const vis=P.filter(match);
+  var vis=P.filter(match);
   vis.forEach(function(p){
-    const e=p.type==='exacta';
-    const d=document.createElement('div');d.className='card';
+    var e=p.type==='exacta';
+    var d=document.createElement('div');d.className='card';
     d.innerHTML='<div class="nm">'+p.name+'</div><div class="ct" style="color:'+(C[p.city]||'#666')+'">'+p.city+'</div><div class="cr"><span>'+(e?p.lat.toFixed(4)+', '+p.lng.toFixed(4):'zona aprox.')+'</span><span style="color:'+(e?'#27ae60':'#f39c12')+'">'+(e?'✓ exacta':'≈ aprox.')+'</span></div>';
-    d.onclick=function(){map.setView([p.lat,p.lng],14);MARK.filter(o=>o.p===p)[0].m.openPopup()};
+    d.onclick=function(){map.setView([p.lat,p.lng],14);MARK.filter(function(o){return o.p===p;})[0].m.openPopup();};
     ls.appendChild(d);
   });
-  if(!vis.length)ls.innerHTML='<p style="padding:16px;color:#999;font-size:12px">Sin resultados</p>';
+  if(!vis.length){ls.innerHTML='<p style="padding:16px;color:#999;font-size:12px">Sin resultados</p>';}
 }
 document.getElementById('q').addEventListener('input',render);
-render();
+tryLoad(0);
 </script>
 </body>
 </html>
