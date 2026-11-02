@@ -98,11 +98,12 @@ function boot(RAW){
   });
   render();
 }
+function norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function render(){
   if(!P.length){return;}
-  var q=document.getElementById('q').value.toLowerCase();
+  var q=norm(document.getElementById('q').value);
   var ls=document.getElementById('ls');ls.innerHTML='';
-  var match=function(p){return ACTIVE[p.city]&&(!q||(p.name+' '+p.city).toLowerCase().indexOf(q)>-1);};
+  var match=function(p){return ACTIVE[p.city]&&(!q||norm(p.name+' '+p.city).indexOf(q)>-1);};
   MARK.forEach(function(o){
     var on=match(o.p);
     if(on&&!map.hasLayer(o.m)){o.m.addTo(map);}
